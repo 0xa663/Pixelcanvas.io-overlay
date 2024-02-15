@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "Pixelcanvas - Overlay",
+
+    "icons": {
+        "48": "assets/images/icon_48.png",
+        "128": "assets/images/icon_128.png"
+    },
+    "web_accessible_resources": [],
+    "permissions": [
+        "storage"
+    ],
+    "content_scripts": [{
+        "matches": ["https://pixelcanvas.io/**", "http://pixelcanvas.io/**"],
+        "js": ["assets/scripts/content.js"],
+        "run_at": "document_start"
+    }]
+}
