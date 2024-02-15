@@ -89,7 +89,7 @@ main(dev);
 
 if (dev) {
     const fn = debounce(() => {
-        main();
+        main(dev);
         console.log("Built");
     }, 1000); 
     

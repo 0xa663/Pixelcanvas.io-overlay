@@ -84,13 +84,13 @@ export async function importArtWork(store: Store, cords: Coordinates, palette: P
         } else {
             const img = file.data as HTMLImageElement;
             const pixels = await imageToMural(img, palette);
-            return new Promise<Mural>((resolve, reject)=> {
+            const mural = await new Promise<Mural>((resolve, reject)=> {
                 store.setOverlayModify({
                     pixels,
                     muralObj: {
                         name: img.alt,
-                        x: cords.ux - (get2DArrWidth(pixels) / 2),
-                        y: cords.uy - (get2DArrHeight(pixels) / 2),
+                        x: Math.floor(cords.ux - (get2DArrWidth(pixels) / 2)),
+                        y: Math.floor(cords.uy - (get2DArrHeight(pixels) / 2)),
                     },
                     cb: (name, x, y, confirm) => {
                         if (confirm) {
@@ -101,6 +101,8 @@ export async function importArtWork(store: Store, cords: Coordinates, palette: P
                     }
                 });
             });
+            validateMural(mural);
+            return mural;
         }
     }
 }
@@ -394,7 +396,7 @@ function quantizeImage(canvas: HTMLCanvasElement, rgbQuant: RgbQuant, ditheringK
 
     const imageData = canvasToImageData(canvas);
 
-    const data = rgbQuant.reduce(canvas, RetrieveType.Uint8Array, ditheringKernel);
+    const data = rgbQuant.reduce(canvas, RetrieveType.Uint8Array, ditheringKernel)!;
     if (imageData.data.length !== data.length) {
         throw new Error("Got unexpected data from regQuant");
     }

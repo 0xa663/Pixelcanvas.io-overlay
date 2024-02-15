@@ -21,7 +21,8 @@ const ColorBox = styled.div`
     height: 25px;
     padding: 2px;
     margin: 2px;
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 12px;
     text-align: center;
     font-weight: bolder;
 `;

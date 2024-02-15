@@ -60,7 +60,13 @@ export class Store implements LoadUnload {
         this.save();
     }
 
-    remove(mural: Mural) {
+    remove(mural: MuralEx) {
+        this._overlayIndices = [];
+        this._overlayModify = undefined;
+        this._phantomOverlay = -1; 
+        if (this._selected && this._selected?.m === mural) {
+            this._selected = undefined;
+        }
         removeItem(this._murals, mural);
         this.emit(StoreEvents.MuralRemoved);
         this.save();

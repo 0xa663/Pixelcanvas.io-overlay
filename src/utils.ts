@@ -152,10 +152,10 @@ export function validateMural(mural: Mural) {
         if (Array.isArray(muralClone)) {
             throw new Error("Should not be an array");
         } else {
-            if (typeof muralClone.x !== "number") throw new Error("X is not a number");
-            if (typeof muralClone.y !== "number") throw new Error("Y is not a number");
-            if (!isInteger(muralClone.x)) throw new Error("X is not an integer");
-            if (!isInteger(muralClone.y)) throw new Error("Y is not an integer");
+            if (typeof muralClone.x !== "number") throw new Error("x is not a number");
+            if (typeof muralClone.y !== "number") throw new Error("y is not a number");
+            if (!isInteger(muralClone.x)) throw new Error("x is not an integer");
+            if (!isInteger(muralClone.y)) throw new Error("y is not an integer");
             if (typeof muralClone.name !== "string") throw new Error("Missing name");
             if (muralClone.name.length <= 1) throw new Error("Name to short");
             if (muralClone.name.length >= 64) throw new Error("Name to long");
@@ -344,5 +344,14 @@ export function formatNumber(number: number) {
 }
 
 export function processNumberEvent(ev: React.ChangeEvent<HTMLInputElement>, cb: (n: number) => void) {
-    cb(parseInt(ev.target.value, 10));
+    console.error(ev, ev.target.value);
+    ev.preventDefault();
+    ev.stopPropagation();
+    if(ev.target.value === "") {
+        cb(0);
+    } else if (ev.target.value === "-") {
+        cb(-1);
+    } else {
+        cb(parseInt(ev.target.value, 10));
+    }
 }

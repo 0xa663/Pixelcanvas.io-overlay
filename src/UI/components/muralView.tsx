@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Coordinates } from "../../coordinates";
 import { TEXT_FORMATS } from "../importMural";
 import saveAs from "file-saver";
+import { Popup } from "./Popup";
 
 const Margin = styled.div`
     margin: 2px;
@@ -166,8 +167,10 @@ export class MuralView extends React.Component<Props, State> {
         const blob = new Blob([JSON.stringify(rawMural)], { type: "application/json;charset=utf-8" });
         saveAs(blob, `${rawMural.name}.${TEXT_FORMATS[0]}`);
     };
-    onDelete = () => {
-        this.s.remove(this.props.mural);
+    onDelete = async () => {
+        if (await Popup.confirm(`Are you sure you want to remove "${this.props.mural.name}"`)) {
+            this.s.remove(this.props.mural);
+        }
     };
     onEnter = () => {
         this.props.store.addPhantomOverlay(this.props.mural);
