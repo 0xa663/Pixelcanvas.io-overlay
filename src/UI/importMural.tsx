@@ -94,13 +94,13 @@ export async function importArtWork(store: Store, cords: Coordinates, palette: P
                     },
                     cb: (name, x, y, confirm) => {
                         if (confirm) {
-                            resolve({ name, pixels, x, y })
+                            resolve({ name, pixels, x, y });
                         } else {
                             reject(new Error("Canceled by user"));
                         }
                     }
                 });
-            })
+            });
         }
     }
 }
@@ -225,13 +225,13 @@ export async function getImageSettingFromUser(image: HTMLImageElement): Promise<
                     <Input
                         type='number'
                         min={1}
-                        onChange={ev => {processNumberEvent(ev, n => {width = n})}}
+                        onChange={ev => {processNumberEvent(ev, n => {width = n;});}}
                     />
                     x
                     <Input
                          type='number'
                          min={1}
-                         onChange={ev => {processNumberEvent(ev, n => {height = n})}}
+                         onChange={ev => {processNumberEvent(ev, n => {height = n;});}}
                     />
                 </div>,
                 [

@@ -53,7 +53,7 @@ export const Theme = styled.div`
     color: rgb(10, 10, 10);
     border: 2px solid black;
     border-radius: 12px;
-`
+`;
 
 export const Border = styled.div`
     border: 2px solid black;

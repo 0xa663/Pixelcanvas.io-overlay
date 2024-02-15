@@ -23,7 +23,7 @@ function appendWindow(children: React.ReactNode) {
     document.body.appendChild(rootElement);
     return () => {
         rootElement.parentElement?.removeChild(rootElement);
-    }
+    };
 }
 
 export class UI {
@@ -33,11 +33,11 @@ export class UI {
     constructor(private store: Store, private palette: Palette) {
         this.container = document.createElement("div");
         const s = this.container.style;
-        this.container.setAttribute("mod", "pixel-canvas-overlay")
+        this.container.setAttribute("mod", "pixel-canvas-overlay");
         s.position = "fixed";
-        s.zIndex = "1000"
+        s.zIndex = "1000";
         s.left = "0px";
-        s.bottom = "0px"
+        s.bottom = "0px";
         const container = document.createElement("div");
         const ss = container.style;
         this.container.appendChild(container);
@@ -89,13 +89,13 @@ export class UI {
                         pixels,
                         cb: (name, x, y, confirm) => {
                             if (confirm) {
-                                resolve({ name, pixels, x, y })
+                                resolve({ name, pixels, x, y });
                             } else {
                                 reject(new Error("Canceled by user"));
                             }
                         }
                     });
-                })
+                });
                 const heights = prompt(`Enter name and location [name, x, y]`) || "";
                 const data = heights.split(",");
                 const numbers = [data[1], data[2]].map(e=> parseInt(e.trim(), 10));
@@ -107,7 +107,7 @@ export class UI {
                     x: numbers[0],
                     y: numbers[1],
                     pixels
-                }
+                };
                 try {
                     validateMural(mural);
                 } catch (error) {
@@ -116,7 +116,7 @@ export class UI {
                 return mural;
             }
         }
-    }
+    };
     private async importFile() {
         const fileInput = new FileInput();
         fileInput.setAcceptType(["png", "jpg", "jpeg", ...TEXT_FORMATS]);
@@ -187,7 +187,7 @@ export class UI {
             canvas.height = getMuralHeight(mural);
             ctx.drawImage(mural.ref, 0, 0, canvas.width, canvas.height);
             const wh = document.createElement("div");
-            wh.textContent = `Size ${getMuralWidth(mural)}x${getMuralHeight(mural)}`
+            wh.textContent = `Size ${getMuralWidth(mural)}x${getMuralHeight(mural)}`;
             const at = document.createElement("div");
             at.textContent = `At: ${mural.x}x${mural.y}`;
             container.appendChild(h5);
