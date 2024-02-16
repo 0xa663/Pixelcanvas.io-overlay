@@ -3854,7 +3854,7 @@
             result2.placeholder = curryRight.placeholder;
             return result2;
           }
-          function debounce2(func, wait, options) {
+          function debounce3(func, wait, options) {
             var lastArgs, lastThis, maxWait, result2, timerId, lastCallTime, lastInvokeTime = 0, leading = false, maxing = false, trailing = true;
             if (typeof func != "function") {
               throw new TypeError2(FUNC_ERROR_TEXT);
@@ -4034,7 +4034,7 @@
               leading = "leading" in options ? !!options.leading : leading;
               trailing = "trailing" in options ? !!options.trailing : trailing;
             }
-            return debounce2(func, wait, {
+            return debounce3(func, wait, {
               "leading": leading,
               "maxWait": wait,
               "trailing": trailing
@@ -5048,7 +5048,7 @@
           lodash.create = create;
           lodash.curry = curry;
           lodash.curryRight = curryRight;
-          lodash.debounce = debounce2;
+          lodash.debounce = debounce3;
           lodash.defaults = defaults;
           lodash.defaultsDeep = defaultsDeep;
           lodash.defer = defer;
@@ -36433,10 +36433,12 @@
       this.props.storage.getItem(this.storageKey).then((point) => {
         if (!this.destroyed && point) {
           this.setState({ x: point.x, y: point.y });
+          setTimeout(() => {
+            this.fixBounds();
+          }, 1e3);
         } else {
           this.setState({ x: 0, y: 0 });
         }
-        this.fixBounds();
       });
     }
     componentWillUnmount() {
@@ -36481,16 +36483,39 @@
       this.setState({ moving: false });
     };
     fixBounds = () => {
+      const bounds = this.ref.current?.getBoundingClientRect();
+      if (bounds) {
+        let x2 = this.state.x;
+        let y2 = this.state.y;
+        if (bounds.left < 0) {
+          x2 = 0;
+        }
+        if (bounds.right > window.innerWidth) {
+          x2 = window.innerWidth - bounds.width;
+        }
+        if (bounds.top < 0) {
+          y2 = 0;
+        }
+        if (bounds.bottom > window.innerHeight) {
+          y2 = window.innerHeight - bounds.height;
+        }
+        if (this.state.x !== x2 || this.state.y !== y2) {
+          this.setState({ x: x2, y: y2 });
+        }
+      }
     };
+    savePoint = (0, import_lodash2.debounce)((point) => {
+      this.props.storage.setItem(this.storageKey, point);
+    }, 100);
     handleMoveLogic(clientX, clientY) {
-      const ref = this.dragRef.current?.getBoundingClientRect();
+      const ref = this.ref.current?.getBoundingClientRect();
       if (ref && this.moving) {
-        const xx = (0, import_lodash2.clamp)(clientX, this.moving.xOff, window.innerWidth - ref.width + this.moving.xOff);
-        const yy = (0, import_lodash2.clamp)(clientY, this.moving.yOff, window.innerHeight - ref.height + this.moving.yOff);
-        const x2 = xx - this.moving.xOff;
-        const y2 = yy - this.moving.yOff;
+        const xx = clientX - this.moving.xOff;
+        const yy = clientY - this.moving.yOff;
+        const x2 = (0, import_lodash2.clamp)(xx, 0, window.innerWidth - ref.width);
+        const y2 = (0, import_lodash2.clamp)(yy, 0, window.innerHeight - ref.height);
         const point = { x: x2, y: y2 };
-        this.props.storage.setItem(this.storageKey, point);
+        this.savePoint(point);
         this.setState(point);
       }
     }

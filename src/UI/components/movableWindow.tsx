@@ -1,7 +1,7 @@
 import React, { createRef } from "react";
 import styled from "styled-components";
 import { Point } from "../../interfaces";
-import { clamp } from "lodash";
+import { clamp, debounce } from "lodash";
 import { Storage } from "../../storage";
 
 const Movable = styled.div`
@@ -65,10 +65,12 @@ export class MovableWindow extends React.Component<Props, State> {
         this.props.storage.getItem<Point>(this.storageKey).then(point => {
             if (!this.destroyed && point) {
                 this.setState({x: point.x, y: point.y});
+                setTimeout(() => {
+                    this.fixBounds();
+                }, 1000);
             } else {
                 this.setState({x: 0, y: 0});
             }
-            this.fixBounds();
         });
     }
     componentWillUnmount () {
@@ -114,48 +116,41 @@ export class MovableWindow extends React.Component<Props, State> {
         this.setState({moving: false});
     };
     private fixBounds = () => {
-        // if(this.shown) {
-        //     const {left, top, width, height} = this.container.getBoundingClientRect();
-        //     const s = this.container.style;
-        //     if (width > window.innerWidth || height > window.innerHeight) {
-        //         const padding = 10;
-        //         if (width > window.innerWidth) {
-        //             s.width = `${window.innerWidth - padding}px`;
-        //         }
-        //         if (height > window.innerHeight) {
-        //             s.height = `${window.innerHeight - padding}px`;
-        //         }
-        //         s.overflow = "auto";
-        //     } else {
-        //         s.width = "";
-        //         s.height = "";
-        //         s.overflow = "";
-        //         if (left < 0) {
-        //             s.left = `0px`;
-        //         }
-        //         if (top < 0) {
-        //             s.top = `0px`;
-        //         }
-        //         if(left + width > window.innerWidth) {
-        //             s.left = `${window.innerWidth - width}px`;
-        //         }
-        //         if (top + height > window.innerHeight) {
-        //             s.top = `${window.innerHeight - height}px`;
-        //         }
-        //     }
-        // }
+        const bounds = this.ref.current?.getBoundingClientRect();
+        if (bounds) {
+            let x = this.state.x;
+            let y = this.state.y;
+            if (bounds.left < 0) {
+                x = 0;
+            } if (bounds.right > window.innerWidth) {
+                x = window.innerWidth - bounds.width;
+            }
+
+            if (bounds.top < 0) {
+                y = 0;
+            } if (bounds.bottom > window.innerHeight) {
+                y = window.innerHeight - bounds.height;
+            }
+            if (this.state.x !== x || this.state.y !== y) {
+                this.setState({x, y});
+            }
+        }
     };
 
+    savePoint = debounce((point: Point) => {
+        this.props.storage.setItem(this.storageKey, point);
+    }, 100);
+
     private handleMoveLogic(clientX: number, clientY: number) {
-        const ref = this.dragRef.current?.getBoundingClientRect();
+        const ref = this.ref.current?.getBoundingClientRect();
         if (ref && this.moving) {
-            const xx = clamp(clientX, this.moving.xOff, window.innerWidth - ref!.width + this.moving.xOff);
-            const yy = clamp(clientY, this.moving.yOff, window.innerHeight - ref!.height + this.moving.yOff) ;
             
-            const x = xx - this.moving!.xOff;
-            const y = yy - this.moving!.yOff;
+            const xx = clientX - this.moving!.xOff;
+            const yy = clientY - this.moving!.yOff;
+            const x = clamp(xx, 0, window.innerWidth - ref!.width);
+            const y = clamp(yy, 0, window.innerHeight - ref!.height) ;
             const point = { x, y };
-            this.props.storage.setItem(this.storageKey, point);
+            this.savePoint(point);
             this.setState(point);
         }
     }
