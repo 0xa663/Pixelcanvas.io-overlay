@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pixel canvas overlay
 // @namespace    http://tampermonkey.net/
-// @version      2024-02-16
+// @version      2024-02-17
 // @description  Scripts renders pixelated overlays over the tile map!
 // @author       0xa663
 // @match        https://pixelcanvas.io/*
@@ -3854,7 +3854,7 @@
             result2.placeholder = curryRight.placeholder;
             return result2;
           }
-          function debounce3(func, wait, options) {
+          function debounce2(func, wait, options) {
             var lastArgs, lastThis, maxWait, result2, timerId, lastCallTime, lastInvokeTime = 0, leading = false, maxing = false, trailing = true;
             if (typeof func != "function") {
               throw new TypeError2(FUNC_ERROR_TEXT);
@@ -4034,7 +4034,7 @@
               leading = "leading" in options ? !!options.leading : leading;
               trailing = "trailing" in options ? !!options.trailing : trailing;
             }
-            return debounce3(func, wait, {
+            return debounce2(func, wait, {
               "leading": leading,
               "maxWait": wait,
               "trailing": trailing
@@ -5048,7 +5048,7 @@
           lodash.create = create;
           lodash.curry = curry;
           lodash.curryRight = curryRight;
-          lodash.debounce = debounce3;
+          lodash.debounce = debounce2;
           lodash.defaults = defaults;
           lodash.defaultsDeep = defaultsDeep;
           lodash.defer = defer;
@@ -36557,7 +36557,7 @@
         this.draw();
       }
     }
-    click = (0, import_lodash3.debounce)((colorIndex) => {
+    click(colorIndex) {
       if (colorIndex >= 0 && colorIndex < this.props.palette.palette.length) {
         if (!this.props.palette.buttons[colorIndex].classList.contains("outline-2")) {
           if (this.state.colorAssistant) {
@@ -36565,7 +36565,7 @@
           }
         }
       }
-    }, 50);
+    }
     componentDidMount() {
       this.props.cords.on(0 /* Div */, this.update);
       this.props.cords.on(0 /* Div */, this.onCords);

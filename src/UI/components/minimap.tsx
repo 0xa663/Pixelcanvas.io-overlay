@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { createCanvas, drawPixelsOntoCanvas } from "../../utils";
 import { Palette } from "../../palette";
-import { clamp, debounce } from "lodash";
+import { clamp} from "lodash";
 import { Store } from "../../store";
 import { Storage } from "../../storage";
 
@@ -81,19 +81,18 @@ export class Minimap extends React.Component<Props, Stats> {
             this.draw();
         } else if (prevState.size !== this.state.size) {
             this.draw();
-        }
-        
+        } 
     }
 
-    private click = debounce((colorIndex: number) => {
+    private click(colorIndex: number) {
         if (colorIndex >= 0 && colorIndex < this.props.palette.palette.length) {
-          if (!this.props.palette.buttons[colorIndex].classList.contains("outline-2")) {
-            if (this.state.colorAssistant) {
-                this.props.palette.buttons[colorIndex].click();
+            if (!this.props.palette.buttons[colorIndex].classList.contains("outline-2")) {
+                if (this.state.colorAssistant) {
+                    this.props.palette.buttons[colorIndex].click();
+                }
             }
-          }
-      }
-      }, 50);
+        }
+    }
   
 
     componentDidMount () {
