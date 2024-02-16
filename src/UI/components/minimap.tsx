@@ -19,7 +19,6 @@ const Flex = styled.div`
 const ColorBox = styled.div`
     width: 25px;
     height: 25px;
-    padding: 2px;
     margin: 2px;
     border: 2px solid black;
     border-radius: 12px;
