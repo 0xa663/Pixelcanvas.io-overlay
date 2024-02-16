@@ -60,6 +60,8 @@ export class MovableWindow extends React.Component<Props, State> {
         window.addEventListener("mousemove", this.onMouseMove);
         window.addEventListener("mouseup", this.onMouseUp);
         window.addEventListener("resize", this.fixBounds);
+        window.addEventListener("touchmove", this.onTouchMove);
+        window.addEventListener("touchend", this.onMouseUp);
         this.props.storage.getItem<Point>(this.storageKey).then(point => {
             if (!this.destroyed && point) {
                 this.setState({x: point.x, y: point.y});
@@ -73,17 +75,21 @@ export class MovableWindow extends React.Component<Props, State> {
         window.removeEventListener("mousemove", this.onMouseMove);
         window.removeEventListener("mouseup", this.onMouseUp);
         window.removeEventListener("resize", this.fixBounds);
+        window.removeEventListener("touchmove", this.onTouchMove);
+        window.removeEventListener("touchend", this.onMouseUp);
         this.destroyed = false;
     }
 
     onTouchMove = (event: TouchEvent) => {
         if (!this.moving) return;
-        const lastTouch = event.touches[event.touches.length - 1];
-        const div = this.dragRef.current!;
-        const { x, y, width, height} = div.getBoundingClientRect();
-        const offsetX = (lastTouch.clientX - x) / width * div.offsetWidth;
-        const offsetY = (lastTouch.clientY - y) / height * div.offsetHeight;
-        this.setMoving(lastTouch.clientX, lastTouch.clientY, offsetX, offsetY);
+        if (!(event instanceof TouchEvent) || !event.isTrusted){
+            return;
+        }
+        for (let i = 0; i < event.touches.length; i++) {
+            const touch = event.touches[i];
+            const { clientX, clientY } = touch;
+            this.handleMoveLogic(clientX, clientY);
+        }
     };
 
     setMoving = (clientX: number, clientY: number, offsetX: number, offsetY: number) => {
@@ -97,7 +103,7 @@ export class MovableWindow extends React.Component<Props, State> {
 
     private onMouseMove = (event: MouseEvent) => {
         if (!this.moving) return;
-        if (!(event instanceof MouseEvent) || !event.isTrusted || event.ctrlKey || event.altKey || event.metaKey){
+        if (!(event instanceof MouseEvent) || event.ctrlKey || event.altKey || event.metaKey){
             return;
         }
         const { clientX, clientY } = event;
@@ -153,21 +159,26 @@ export class MovableWindow extends React.Component<Props, State> {
             this.setState(point);
         }
     }
+    onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        this.setMoving(event.clientX,event.clientY, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+        this.setState({moving: true});
+    };
+    onTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        const lastTouch = event.nativeEvent.touches[event.nativeEvent.touches.length - 1];
+        const div = event.target as HTMLDivElement;
+        const { x, y, width, height} = div.getBoundingClientRect();
+        const offsetX = (lastTouch.clientX - x) / width * div.offsetWidth;
+        const offsetY = (lastTouch.clientY - y) / height * div.offsetHeight;
+        this.setMoving(lastTouch.clientX, lastTouch.clientY, offsetX, offsetY);
+        this.setState({moving: true});
+    };
+
     get storageKey() {
         return `__storage__${this.props.storageKey}`;
     }
     render() {
         return <Movable ref={this.ref} style={{left: `${this.state.x}px`, top: `${this.state.y}px`}}>
-            <DragArea ref={this.dragRef} style={{cursor: this.state.moving ? "grabbing" : ""}} onMouseDown={event => {
-                this.moving = {
-                    x: event.clientX,
-                    y: event.clientY,
-                    xOff: event.nativeEvent.offsetX,
-                    yOff: event.nativeEvent.offsetY,
-                };
-                this.setState({moving: true});
-            
-        }}> <h2>{this.props.title}</h2> </DragArea>
+            <DragArea ref={this.dragRef} style={{cursor: this.state.moving ? "grabbing" : ""}} onMouseDown={this.onMouseDown} onTouchStart={this.onTouchStart} > <h2>{this.props.title}</h2> </DragArea>
 
 
             {this.props.children}
