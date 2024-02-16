@@ -30824,7 +30824,6 @@
     return numberFormatter ? numberFormatter.format(number) : number.toString();
   }
   function processNumberEvent(ev, cb) {
-    console.error(ev, ev.target.value);
     ev.preventDefault();
     ev.stopPropagation();
     if (ev.target.value === "") {
@@ -35655,8 +35654,6 @@
               }
             }
           });
-        } else {
-          console.error("Missing reference");
         }
       });
     }
@@ -36864,11 +36861,8 @@
     componentDidMount() {
       this.props.store.on(7 /* Any */, this.update);
       this.update();
-      console.error(this.STORAGE_KEY);
       this.props.storage.getItem(this.STORAGE_KEY).then((data) => {
-        console.error(data, this.STORAGE_KEY, data !== null, !this.destroyed);
         if (data !== null && !this.destroyed) {
-          console.error("loadingnn????????", data);
           this.setState(data);
         }
       });

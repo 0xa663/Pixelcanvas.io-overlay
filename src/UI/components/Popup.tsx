@@ -130,8 +130,6 @@ export class Popup {
                         }
                     }
                 });
-            } else {
-                console.error("Missing reference");
             }
         });
     }

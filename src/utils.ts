@@ -344,7 +344,6 @@ export function formatNumber(number: number) {
 }
 
 export function processNumberEvent(ev: React.ChangeEvent<HTMLInputElement>, cb: (n: number) => void) {
-    console.error(ev, ev.target.value);
     ev.preventDefault();
     ev.stopPropagation();
     if(ev.target.value === "") {

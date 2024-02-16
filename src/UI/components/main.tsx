@@ -47,11 +47,8 @@ export class Main extends React.Component<Props, State> {
     componentDidMount() {
         this.props.store.on(StoreEvents.Any, this.update);
         this.update();
-        console.error(this.STORAGE_KEY);
         this.props.storage.getItem<StoreSettings>(this.STORAGE_KEY).then(data => {
-            console.error(data, this.STORAGE_KEY, data !== null, !this.destroyed);
             if (data !== null && !this.destroyed) {
-                console.error("loadingnn????????", data);
                 this.setState(data);
             }
         });
