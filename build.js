@@ -32,7 +32,7 @@ async function main(dev) {
     const toAssetsDir = path.join(buildVersionDir, "assets");
     const manifestTemplateLocation = path.join(process.cwd(), "manifest.template.json");
     const userScriptTemplateLocation = path.join(process.cwd(), "user-script.template.js");
-    const userScriptOutput = path.join(distDir, "user-script.js");
+    const userScriptOutput = path.join(distDir, "user-script.user.js");
     const manifestLocation = path.join(buildVersionDir, "manifest.json");
 
     const scriptInput = path.join(process.cwd(), "src", "index.ts");
